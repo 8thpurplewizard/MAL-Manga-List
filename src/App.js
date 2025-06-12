@@ -9,10 +9,24 @@ function App() {
   const [status, setStatus] = useState("Click 'Fetch Manga List' to load.");
   // State to manage loading indicator
   const [isLoading, setIsLoading] = useState(false);
-  // State for sorting: 'title', 'score', 'chapters', 'volumes'
+  // State for sorting: 'title', 'score', 'chapters', 'volumes', 'publishingStatus'
   const [sortBy, setSortBy] = useState(null);
   // State for sort order: 'asc' or 'desc'
   const [sortOrder, setSortOrder] = useState("asc");
+
+  // Helper function to map numerical status to readable string
+  const getPublishingStatus = (statusNum) => {
+    switch (statusNum) {
+      case 1:
+        return "Publishing";
+      case 2:
+        return "Completed";
+      case 4:
+        return "Hiatus";
+      default:
+        return "N/A";
+    }
+  };
 
   // Function to parse the HTML snippet and extract manga details
   const parseMangaData = (rawHtmlSnippet) => {
@@ -38,6 +52,7 @@ function App() {
           volumes: item.manga_num_volumes
             ? parseInt(item.manga_num_volumes, 10)
             : null, // Parse volumes to number
+          publishingStatus: getPublishingStatus(item.manga_publishing_status), // Add publishing status
         }));
         console.log("Extracted Manga Details:", extractedData);
         return extractedData;
@@ -96,8 +111,7 @@ function App() {
       const aValue = a[sortBy];
       const bValue = b[sortBy];
 
-      // Handle null/undefined values by treating them as smaller/larger for sorting
-      // For numbers, nulls often go to the end if ascending, to the beginning if descending
+      // Handle null/undefined values by treating them as smaller/larger for numerical sorting
       if (typeof aValue === "number" && typeof bValue === "number") {
         if (aValue === null && bValue === null) return 0;
         if (aValue === null) return sortOrder === "asc" ? 1 : -1; // null comes last if asc
@@ -105,7 +119,7 @@ function App() {
         return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
       }
 
-      // String comparison for 'title'
+      // String comparison for 'title' and 'publishingStatus'
       if (typeof aValue === "string" && typeof bValue === "string") {
         return sortOrder === "asc"
           ? aValue.localeCompare(bValue)
@@ -194,6 +208,16 @@ function App() {
             >
               Volumes{renderSortIcon("volumes")}
             </button>
+            <button
+              onClick={() => handleSort("publishingStatus")}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition duration-200 ${
+                sortBy === "publishingStatus"
+                  ? "bg-blue-600 text-white"
+                  : "bg-blue-100 text-blue-800 hover:bg-blue-200"
+              }`}
+            >
+              Status{renderSortIcon("publishingStatus")}
+            </button>
           </div>
         )}
 
@@ -219,6 +243,10 @@ function App() {
                   | Volumes:{" "}
                   <span className="font-medium text-orange-700">
                     {manga.volumes !== null ? manga.volumes : "N/A"}
+                  </span>{" "}
+                  | Status:{" "}
+                  <span className="font-medium text-indigo-700">
+                    {manga.publishingStatus}
                   </span>
                 </span>
               </li>
