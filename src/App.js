@@ -52,7 +52,9 @@ function App() {
           volumes: item.manga_num_volumes
             ? parseInt(item.manga_num_volumes, 10)
             : null, // Parse volumes to number
-          publishingStatus: getPublishingStatus(item.manga_publishing_status), // Add publishing status
+          publishingStatus: getPublishingStatus(item.manga_publishing_status),
+          // Correctly accessing 'name' from each genre object within the 'genres' array
+          genres: item.genres ? item.genres.map((genre) => genre.name) : [],
         }));
         console.log("Extracted Manga Details:", extractedData);
         return extractedData;
@@ -131,9 +133,31 @@ function App() {
     });
 
     return sortableData;
-  }, [mangaData, sortBy, sortOrder]); // Re-sort only when mangaData, sortBy, or sortOrder changes
+  }, [mangaData, sortBy, sortOrder]);
 
-  // No initial API call on component mount; triggered by button click
+  const mangaStatusCounts = useMemo(() => {
+    const counts = {};
+    mangaData.forEach((manga) => {
+      counts[manga.publishingStatus] =
+        (counts[manga.publishingStatus] || 0) + 1;
+    });
+    return counts;
+  }, [mangaData]);
+
+  const mangaGenreCounts = useMemo(() => {
+    const counts = {};
+    mangaData.forEach((manga) => {
+      if (manga.genres && manga.genres.length > 0) {
+        manga.genres.forEach((genre) => {
+          counts[genre] = (counts[genre] || 0) + 1;
+        });
+      } else {
+        counts["No Genre Specified"] = (counts["No Genre Specified"] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [mangaData]);
+
   useEffect(() => {}, []);
 
   // Helper to render sort icon
@@ -163,10 +187,60 @@ function App() {
         </button>
 
         <h2 className="text-2xl font-semibold text-gray-800 mt-8 mb-4 border-b pb-2">
+          Manga Status Summary:
+        </h2>
+        {Object.keys(mangaStatusCounts).length > 0 ? (
+          <ul className="space-y-3 mb-6 p-4 bg-gray-50 rounded-md border border-gray-200">
+            {Object.entries(mangaStatusCounts).map(([status, count]) => (
+              <li
+                key={status}
+                className="flex justify-between items-center text-gray-800"
+              >
+                <span className="font-semibold">{status}:</span>
+                <span className="text-blue-600 font-bold text-xl">{count}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-center text-gray-500 mt-4 mb-6">
+            {isLoading
+              ? "Calculating status summary..."
+              : "No status data available yet. Fetch manga list first."}
+          </p>
+        )}
+
+        <h2 className="text-2xl font-semibold text-gray-800 mt-8 mb-4 border-b pb-2">
+          Manga Genre Summary:
+        </h2>
+        {Object.keys(mangaGenreCounts).length > 0 ? (
+          <ul className="space-y-3 mb-6 p-4 bg-gray-50 rounded-md border border-gray-200">
+            {Object.entries(mangaGenreCounts)
+              .sort(([genreA], [genreB]) => genreA.localeCompare(genreB))
+              .map(([genre, count]) => (
+                <li
+                  key={genre}
+                  className="flex justify-between items-center text-gray-800"
+                >
+                  <span className="font-semibold">{genre}:</span>
+                  <span className="text-purple-600 font-bold text-xl">
+                    {count}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        ) : (
+          <p className="text-center text-gray-500 mt-4 mb-6">
+            {isLoading
+              ? "Calculating genre summary..."
+              : "No genre data available yet. Fetch manga list first."}
+          </p>
+        )}
+
+        <h2 className="text-2xl font-semibold text-gray-800 mt-8 mb-4 border-b pb-2">
           Manga List:
         </h2>
 
-        {mangaData.length > 0 && ( // Show sort buttons only if data is available
+        {mangaData.length > 0 && (
           <div className="flex flex-wrap justify-center gap-2 mb-6">
             <button
               onClick={() => handleSort("title")}
@@ -248,6 +322,15 @@ function App() {
                   <span className="font-medium text-indigo-700">
                     {manga.publishingStatus}
                   </span>
+                  {manga.genres && manga.genres.length > 0 && (
+                    <>
+                      {" "}
+                      | Genres:{" "}
+                      <span className="font-medium text-pink-700">
+                        {manga.genres.join(", ")}
+                      </span>
+                    </>
+                  )}
                 </span>
               </li>
             ))}
