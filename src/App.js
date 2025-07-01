@@ -161,6 +161,14 @@ function App() {
     return sortableData;
   }, [mangaData, sortBy, sortOrder]);
 
+  const mangaUserStatusCounts = useMemo(() => {
+    const counts = {};
+    mangaData.forEach((manga) => {
+      counts[manga.userStatus] = (counts[manga.userStatus] || 0) + 1;
+    });
+    return counts;
+  }, [mangaData]);
+
   const mangaStatusCounts = useMemo(() => {
     const counts = {};
     mangaData.forEach((manga) => {
@@ -219,6 +227,7 @@ function App() {
         <FetchButton isLoading={isLoading} fetchMangaList={fetchMangaList} />
         <MangaStats
           theme={theme}
+          mangaUserStatusCounts={mangaUserStatusCounts}
           mangaStatusCounts={mangaStatusCounts}
           mangaGenreCounts={mangaGenreCounts}
           isLoading={isLoading}
