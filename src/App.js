@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
+import Header from "./components/Header";
+import StatusDisplay from "./components/StatusDisplay";
+import FetchButton from "./components/FetchButton";
+import MangaStats from "./components/MangaStats";
+import SortControls from "./components/SortControls";
+import MangaList from "./components/MangaList";
 
 // Main React App component
 function App() {
@@ -190,246 +196,27 @@ function App() {
             : "bg-gray-700 text-red-200"
         } p-8 rounded-lg shadow-xl w-full max-w-2xl`}
       >
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-red-200">MAL Manga Status</h1>
-          <button
-            onClick={toggleTheme}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold transition duration-200 ${
-              theme === "light"
-                ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                : "bg-gray-600 text-red-200 hover:bg-gray-500"
-            }`}
-          >
-            Toggle Theme ({theme === "light" ? "Dark" : "Light"})
-          </button>
-        </div>
-        <p
-          className={`text-center ${
-            theme === "light" ? "text-gray-600 mb-4" : "text-red-200 mb-4"
-          } `}
-        >
-          Status:{" "}
-          <span
-            className={`font-semibold ${
-              theme === "light"
-                ? "bg-gray-200 text-gray-600 mb-4"
-                : "text-red-200 mb-4"
-            }`}
-          >
-            {status}
-          </span>
-        </p>
-
-        <button
-          onClick={fetchMangaList}
-          disabled={isLoading}
-          className="w-full bg-indigo-500 hover:bg-indigo-600 text-red-200 font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed mb-6"
-        >
-          {isLoading ? "Loading..." : "Fetch Manga List"}
-        </button>
-
-        <h2
-          className={`text-center text-2xl font-semibold ${
-            theme === "light"
-              ? "text-gray-800 mt-8 mb-4 border-b pb-2"
-              : "text-red-200 mt-8 mb-4 border-b pb-2"
-          } `}
-        >
-          Manga Status Summary:
-        </h2>
-        {Object.keys(mangaStatusCounts).length > 0 ? (
-          <ul
-            className={`space-y-3 mb-6 p-4 rounded-md border ${
-              theme === "light"
-                ? "bg-gray-50 border-gray-200"
-                : "bg-gray-600 border-gray-500"
-            }`}
-          >
-            {Object.entries(mangaStatusCounts).map(([status, count]) => (
-              <li
-                key={status}
-                className={`flex justify-between items-center ${
-                  theme === "light" ? "text-gray-800" : "text-red-200"
-                }`}
-              >
-                <span className="font-semibold">{status}:</span>
-                <span className="text-blue-600 font-bold text-xl">{count}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-center text-gray-500 mt-4 mb-6">
-            {isLoading
-              ? "Calculating status summary..."
-              : "No status data available yet. Fetch manga list first."}
-          </p>
-        )}
-
-        <h2
-          className={`text-center text-2xl font-semibold ${
-            theme === "light"
-              ? "text-gray-800 mt-8 mb-4 border-b pb-2"
-              : "text-red-200 mt-8 mb-4 border-b pb-2"
-          } `}
-        >
-          Manga Genre Summary:
-        </h2>
-        {Object.keys(mangaGenreCounts).length > 0 ? (
-          <ul
-            className={`space-y-3 mb-6 p-4 rounded-md border ${
-              theme === "light" ? "border-gray-200" : "border-gray-500"
-            }`}
-          >
-            {Object.entries(mangaGenreCounts)
-              .sort(([genreA], [genreB]) => genreA.localeCompare(genreB))
-              .map(([genre, count], index) => (
-                <li
-                  key={genre}
-                  className={`flex justify-between items-center ${
-                    theme === "light" ? "text-gray-800" : "text-red-200"
-                  } ${index % 2 === 0 ? "bg-custom-light" : "bg-custom-dark"}`}
-                >
-                  <span className="font-semibold">{genre}:</span>
-                  <span className="text-purple-600 font-bold text-xl">
-                    {count}
-                  </span>
-                </li>
-              ))}
-          </ul>
-        ) : (
-          <p className="text-center text-gray-500 mt-4 mb-6">
-            {isLoading
-              ? "Calculating genre summary..."
-              : "No genre data available yet. Fetch manga list first."}
-          </p>
-        )}
-
-        <h2
-          className={`text-center text-2xl font-semibold ${
-            theme === "light"
-              ? "text-gray-800 mt-8 mb-4 border-b pb-2"
-              : "text-gray-200 mt-8 mb-4 border-b pb-2"
-          } `}
-        >
-          Manga List:
-        </h2>
-
+        <Header theme={theme} toggleTheme={toggleTheme} />
+        <StatusDisplay theme={theme} status={status} />
+        <FetchButton isLoading={isLoading} fetchMangaList={fetchMangaList} />
+        <MangaStats
+          theme={theme}
+          mangaStatusCounts={mangaStatusCounts}
+          mangaGenreCounts={mangaGenreCounts}
+          isLoading={isLoading}
+        />
         {mangaData.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-2 mb-6">
-            <button
-              onClick={() => handleSort("title")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition duration-200 ${
-                sortBy === "title"
-                  ? "bg-blue-600 text-white"
-                  : "bg-blue-100 text-blue-800 hover:bg-blue-200"
-              }`}
-            >
-              Title{renderSortIcon("title")}
-            </button>
-            <button
-              onClick={() => handleSort("score")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition duration-200 ${
-                sortBy === "score"
-                  ? "bg-blue-600 text-white"
-                  : "bg-blue-100 text-blue-800 hover:bg-blue-200"
-              }`}
-            >
-              Score{renderSortIcon("score")}
-            </button>
-            <button
-              onClick={() => handleSort("chapters")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition duration-200 ${
-                sortBy === "chapters"
-                  ? "bg-blue-600 text-white"
-                  : "bg-blue-100 text-blue-800 hover:bg-blue-200"
-              }`}
-            >
-              Chapters{renderSortIcon("chapters")}
-            </button>
-            <button
-              onClick={() => handleSort("volumes")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition duration-200 ${
-                sortBy === "volumes"
-                  ? "bg-blue-600 text-white"
-                  : "bg-blue-100 text-blue-800 hover:bg-blue-200"
-              }`}
-            >
-              Volumes{renderSortIcon("volumes")}
-            </button>
-            <button
-              onClick={() => handleSort("publishingStatus")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition duration-200 ${
-                sortBy === "publishingStatus"
-                  ? "bg-blue-600 text-white"
-                  : "bg-blue-100 text-blue-800 hover:bg-blue-200"
-              }`}
-            >
-              Status{renderSortIcon("publishingStatus")}
-            </button>
-          </div>
+          <SortControls
+            sortBy={sortBy}
+            handleSort={handleSort}
+            renderSortIcon={renderSortIcon}
+          />
         )}
-
-        {sortedManga.length > 0 ? (
-          <ul className="space-y-4">
-            {sortedManga.map((manga, index) => (
-              <li
-                key={index}
-                className={`p-4 rounded-md shadow-sm border ${
-                  theme === "light" ? "border-blue-200" : "border-blue-600"
-                } ${index % 2 === 0 ? "bg-custom-light" : "bg-custom-dark"}`}
-              >
-                <span
-                  className={`font-bold text-lg block mb-1 ${
-                    theme === "light" ? "text-blue-800" : "text-blue-200"
-                  }`}
-                >
-                  {manga.title}
-                </span>
-                <span
-                  className={`${
-                    theme === "light" ? "text-gray-700" : "text-gray-300"
-                  } text-sm`}
-                >
-                  Score:{" "}
-                  <span className="font-medium text-red-200">
-                    {manga.score !== null ? manga.score : "N/A"}
-                  </span>{" "}
-                  | Chapters:{" "}
-                  <span className="font-medium text-red-200">
-                    {manga.chapters !== null ? manga.chapters : "N/A"}
-                  </span>{" "}
-                  | Volumes:{" "}
-                  <span className="font-medium text-red-200">
-                    {manga.volumes !== null ? manga.volumes : "N/A"}
-                  </span>{" "}
-                  | Status:{" "}
-                  <span className="font-medium text-red-200">
-                    {manga.publishingStatus}
-                  </span>
-                  {manga.genres && manga.genres.length > 0 && (
-                    <>
-                      {" "}
-                      | Genres:{" "}
-                      <span className="font-medium text-red-200">
-                        {manga.genres.join(", ")}
-                      </span>
-                    </>
-                  )}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p
-            className={`${
-              theme === "light" ? "text-gray-500" : "text-gray-400"
-            } text-center mt-4`}
-          >
-            {isLoading
-              ? "Please wait..."
-              : "No manga data loaded yet. Click 'Fetch Manga List' to begin."}
-          </p>
-        )}
+        <MangaList
+          theme={theme}
+          sortedManga={sortedManga}
+          isLoading={isLoading}
+        />
       </div>
     </div>
   );
