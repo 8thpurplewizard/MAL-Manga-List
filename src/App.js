@@ -3,6 +3,8 @@ import axios from "axios";
 
 // Main React App component
 function App() {
+  // State to manage the current theme ('light' or 'dark')
+  const [theme, setTheme] = useState("dark");
   // State to store the extracted manga data
   const [mangaData, setMangaData] = useState([]);
   // State to store the status of the API request/data processing
@@ -160,6 +162,11 @@ function App() {
 
   useEffect(() => {}, []);
 
+  // Function to toggle the theme
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
+
   // Helper to render sort icon
   const renderSortIcon = (key) => {
     if (sortBy === key) {
@@ -169,32 +176,81 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10 px-4 font-sans">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl">
-        <h1 className="text-4xl font-bold text-center text-blue-700 mb-6">
-          MAL Manga Status
-        </h1>
-        <p className="text-center text-gray-600 mb-4">
-          Status: <span className="font-semibold text-gray-800">{status}</span>
+    <div
+      className={`min-h-screen ${
+        theme === "light"
+          ? "bg-gray-100 text-gray-900"
+          : "bg-gray-800 text-pastel"
+      } flex flex-col items-center py-10 px-4 font-sans`}
+    >
+      <div
+        className={`${
+          theme === "light"
+            ? "bg-white text-gray-800"
+            : "bg-gray-700 text-red-200"
+        } p-8 rounded-lg shadow-xl w-full max-w-2xl`}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-4xl font-bold text-red-200">MAL Manga Status</h1>
+          <button
+            onClick={toggleTheme}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition duration-200 ${
+              theme === "light"
+                ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                : "bg-gray-600 text-red-200 hover:bg-gray-500"
+            }`}
+          >
+            Toggle Theme ({theme === "light" ? "Dark" : "Light"})
+          </button>
+        </div>
+        <p
+          className={`text-center ${
+            theme === "light" ? "text-gray-600 mb-4" : "text-red-200 mb-4"
+          } `}
+        >
+          Status:{" "}
+          <span
+            className={`font-semibold ${
+              theme === "light"
+                ? "bg-gray-200 text-gray-600 mb-4"
+                : "text-red-200 mb-4"
+            }`}
+          >
+            {status}
+          </span>
         </p>
 
         <button
           onClick={fetchMangaList}
           disabled={isLoading}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed mb-6"
+          className="w-full bg-indigo-500 hover:bg-indigo-600 text-red-200 font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed mb-6"
         >
           {isLoading ? "Loading..." : "Fetch Manga List"}
         </button>
 
-        <h2 className="text-2xl font-semibold text-gray-800 mt-8 mb-4 border-b pb-2">
+        <h2
+          className={`text-center text-2xl font-semibold ${
+            theme === "light"
+              ? "text-gray-800 mt-8 mb-4 border-b pb-2"
+              : "text-red-200 mt-8 mb-4 border-b pb-2"
+          } `}
+        >
           Manga Status Summary:
         </h2>
         {Object.keys(mangaStatusCounts).length > 0 ? (
-          <ul className="space-y-3 mb-6 p-4 bg-gray-50 rounded-md border border-gray-200">
+          <ul
+            className={`space-y-3 mb-6 p-4 rounded-md border ${
+              theme === "light"
+                ? "bg-gray-50 border-gray-200"
+                : "bg-gray-600 border-gray-500"
+            }`}
+          >
             {Object.entries(mangaStatusCounts).map(([status, count]) => (
               <li
                 key={status}
-                className="flex justify-between items-center text-gray-800"
+                className={`flex justify-between items-center ${
+                  theme === "light" ? "text-gray-800" : "text-red-200"
+                }`}
               >
                 <span className="font-semibold">{status}:</span>
                 <span className="text-blue-600 font-bold text-xl">{count}</span>
@@ -209,17 +265,29 @@ function App() {
           </p>
         )}
 
-        <h2 className="text-2xl font-semibold text-gray-800 mt-8 mb-4 border-b pb-2">
+        <h2
+          className={`text-center text-2xl font-semibold ${
+            theme === "light"
+              ? "text-gray-800 mt-8 mb-4 border-b pb-2"
+              : "text-red-200 mt-8 mb-4 border-b pb-2"
+          } `}
+        >
           Manga Genre Summary:
         </h2>
         {Object.keys(mangaGenreCounts).length > 0 ? (
-          <ul className="space-y-3 mb-6 p-4 bg-gray-50 rounded-md border border-gray-200">
+          <ul
+            className={`space-y-3 mb-6 p-4 rounded-md border ${
+              theme === "light" ? "border-gray-200" : "border-gray-500"
+            }`}
+          >
             {Object.entries(mangaGenreCounts)
               .sort(([genreA], [genreB]) => genreA.localeCompare(genreB))
-              .map(([genre, count]) => (
+              .map(([genre, count], index) => (
                 <li
                   key={genre}
-                  className="flex justify-between items-center text-gray-800"
+                  className={`flex justify-between items-center ${
+                    theme === "light" ? "text-gray-800" : "text-red-200"
+                  } ${index % 2 === 0 ? "bg-custom-light" : "bg-custom-dark"}`}
                 >
                   <span className="font-semibold">{genre}:</span>
                   <span className="text-purple-600 font-bold text-xl">
@@ -236,7 +304,13 @@ function App() {
           </p>
         )}
 
-        <h2 className="text-2xl font-semibold text-gray-800 mt-8 mb-4 border-b pb-2">
+        <h2
+          className={`text-center text-2xl font-semibold ${
+            theme === "light"
+              ? "text-gray-800 mt-8 mb-4 border-b pb-2"
+              : "text-gray-200 mt-8 mb-4 border-b pb-2"
+          } `}
+        >
           Manga List:
         </h2>
 
@@ -300,33 +374,43 @@ function App() {
             {sortedManga.map((manga, index) => (
               <li
                 key={index}
-                className="bg-blue-50 p-4 rounded-md shadow-sm border border-blue-200"
+                className={`p-4 rounded-md shadow-sm border ${
+                  theme === "light" ? "border-blue-200" : "border-blue-600"
+                } ${index % 2 === 0 ? "bg-custom-light" : "bg-custom-dark"}`}
               >
-                <span className="font-bold text-lg text-blue-800 block mb-1">
+                <span
+                  className={`font-bold text-lg block mb-1 ${
+                    theme === "light" ? "text-blue-800" : "text-blue-200"
+                  }`}
+                >
                   {manga.title}
                 </span>
-                <span className="text-gray-700 text-sm">
+                <span
+                  className={`${
+                    theme === "light" ? "text-gray-700" : "text-gray-300"
+                  } text-sm`}
+                >
                   Score:{" "}
-                  <span className="font-medium text-green-700">
+                  <span className="font-medium text-red-200">
                     {manga.score !== null ? manga.score : "N/A"}
                   </span>{" "}
                   | Chapters:{" "}
-                  <span className="font-medium text-purple-700">
+                  <span className="font-medium text-red-200">
                     {manga.chapters !== null ? manga.chapters : "N/A"}
                   </span>{" "}
                   | Volumes:{" "}
-                  <span className="font-medium text-orange-700">
+                  <span className="font-medium text-red-200">
                     {manga.volumes !== null ? manga.volumes : "N/A"}
                   </span>{" "}
                   | Status:{" "}
-                  <span className="font-medium text-indigo-700">
+                  <span className="font-medium text-red-200">
                     {manga.publishingStatus}
                   </span>
                   {manga.genres && manga.genres.length > 0 && (
                     <>
                       {" "}
                       | Genres:{" "}
-                      <span className="font-medium text-pink-700">
+                      <span className="font-medium text-red-200">
                         {manga.genres.join(", ")}
                       </span>
                     </>
@@ -336,7 +420,11 @@ function App() {
             ))}
           </ul>
         ) : (
-          <p className="text-center text-gray-500 mt-4">
+          <p
+            className={`${
+              theme === "light" ? "text-gray-500" : "text-gray-400"
+            } text-center mt-4`}
+          >
             {isLoading
               ? "Please wait..."
               : "No manga data loaded yet. Click 'Fetch Manga List' to begin."}
