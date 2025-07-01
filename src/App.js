@@ -36,6 +36,23 @@ function App() {
     }
   };
 
+  const getUserStatus = (statusNum) => {
+    switch (statusNum) {
+      case 1:
+        return "Reading";
+      case 2:
+        return "Read";
+      case 3:
+        return "On-Hold";
+      case 4:
+        return "Dropped";
+      case 6:
+        return "To-read";
+      default:
+        return "N/A";
+    }
+  };
+
   // Function to parse the HTML snippet and extract manga details
   const parseMangaData = (rawHtmlSnippet) => {
     console.log("Raw HTML Snippet received:", rawHtmlSnippet);
@@ -60,6 +77,7 @@ function App() {
           volumes: item.manga_num_volumes
             ? parseInt(item.manga_num_volumes, 10)
             : null, // Parse volumes to number
+          userStatus: getUserStatus(item.status),
           publishingStatus: getPublishingStatus(item.manga_publishing_status),
           // Correctly accessing 'name' from each genre object within the 'genres' array
           genres: item.genres ? item.genres.map((genre) => genre.name) : [],
@@ -84,7 +102,7 @@ function App() {
     setSortOrder("asc");
 
     try {
-      const response = await axios.get("/api/mangalist/FancyUnicorn?status=6");
+      const response = await axios.get("/api/mangalist/FancyUnicorn?status=7");
       setStatus(`Success: ${response.status}`);
       console.log("API Response Data (full):", response.data);
       const data = parseMangaData(response.data);

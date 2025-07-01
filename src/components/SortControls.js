@@ -51,7 +51,17 @@ const SortControls = ({ sortBy, handleSort, renderSortIcon }) => {
             : "bg-blue-100 text-blue-800 hover:bg-blue-200"
         }`}
       >
-        Status{renderSortIcon("publishingStatus")}
+        Publishing Status{renderSortIcon("publishingStatus")}
+      </button>
+      <button
+        onClick={() => handleSort("userStatus")}
+        className={`px-4 py-2 rounded-lg text-sm font-semibold transition duration-200 ${
+          sortBy === "userStatus"
+            ? "bg-blue-600 text-white"
+            : "bg-blue-100 text-blue-800 hover:bg-blue-200"
+        }`}
+      >
+        User Status{renderSortIcon("userStatus")}
       </button>
     </div>
   );

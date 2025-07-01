@@ -23,11 +23,12 @@ const MangaList = ({ theme, sortedManga, isLoading }) => {
               } ${index % 2 === 0 ? "bg-custom-light" : "bg-custom-dark"}`}
             >
               <span
-                className={`font-bold text-lg block mb-1 ${
+                className={`font-bold text-lg flex justify-between items-center mb-1 ${
                   theme === "light" ? "text-blue-800" : "text-blue-200"
                 }`}
               >
-                {manga.title}
+                <span>{manga.title}</span>
+                <span className="text-sm font-normal">{manga.userStatus}</span>
               </span>
               <span
                 className={`${
