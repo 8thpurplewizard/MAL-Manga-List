@@ -81,6 +81,7 @@ function App() {
           publishingStatus: getPublishingStatus(item.manga_publishing_status),
           // Correctly accessing 'name' from each genre object within the 'genres' array
           genres: item.genres ? item.genres.map((genre) => genre.name) : [],
+          my_list_status: { status: getUserStatus(item.status) },
         }));
         console.log("Extracted Manga Details:", extractedData);
         return extractedData;
@@ -231,6 +232,7 @@ function App() {
           mangaStatusCounts={mangaStatusCounts}
           mangaGenreCounts={mangaGenreCounts}
           isLoading={isLoading}
+          mangaList={mangaData}
         />
         {mangaData.length > 0 && (
           <SortControls
