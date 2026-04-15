@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/MAL-Manga-List/static/css/main.4587b878.css",
+    "main.js": "/MAL-Manga-List/static/js/main.6fe4701a.js",
+    "index.html": "/MAL-Manga-List/index.html",
+    "main.4587b878.css.map": "/MAL-Manga-List/static/css/main.4587b878.css.map",
+    "main.6fe4701a.js.map": "/MAL-Manga-List/static/js/main.6fe4701a.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.4587b878.css",
+    "static/js/main.6fe4701a.js"
+  ]
+}
