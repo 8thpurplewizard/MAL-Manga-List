@@ -102,7 +102,7 @@ function App() {
     setSortOrder("asc");
 
     try {
-      const response = await axios.get("/api/mangalist/FancyUnicorn?status=7");
+      const response = await axios.get("/api/mangalist/FancyUnicorn?status");
       setStatus(`Success: ${response.status}`);
       console.log("API Response Data (full):", response.data);
       const data = parseMangaData(response.data);
@@ -213,14 +213,14 @@ function App() {
         theme === "light"
           ? "bg-gray-100 text-gray-900"
           : "bg-gray-800 text-pastel"
-      } flex flex-col items-center py-10 px-4 font-sans`}
+      } flex gap-4 max-w-2l mx-auto py-10 px-4`}
     >
       <div
         className={`${
           theme === "light"
             ? "bg-white text-gray-800"
             : "bg-gray-700 text-red-200"
-        } p-8 rounded-lg shadow-xl w-full max-w-2xl`}
+        } p-8 rounded-lg shadow-xl w-full max-w-sl flex-1`}
       >
         <Header theme={theme} toggleTheme={toggleTheme} />
         <StatusDisplay theme={theme} status={status} />
@@ -232,6 +232,13 @@ function App() {
           mangaGenreCounts={mangaGenreCounts}
           isLoading={isLoading}
         />
+      </div>
+      <div
+      className={`${
+          theme === "light"
+            ? "bg-white text-gray-800"
+            : "bg-gray-700 text-red-200"
+        } p-8 rounded-lg shadow-xl w-full max-w-2l flex-1`}>
         {mangaData.length > 0 && (
           <SortControls
             sortBy={sortBy}
