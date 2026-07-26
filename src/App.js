@@ -6,9 +6,19 @@ import FetchButton from "./components/FetchButton";
 import MangaStats from "./components/MangaStats";
 import SortControls from "./components/SortControls";
 import MangaList from "./components/MangaList";
+import StatusDropdown from "./components/StatusDropdown"
 
 // Main React App component
 function App() {
+  const dropdownStatusArray = [
+  { label: "All Manga", value: 7 },
+  { label: "Currently Reading", value: 1 },
+  { label: "Completed", value: 2 },
+  { label: "On Hold", value: 3 },
+  { label: "Dropped", value: 4 },
+  { label: "Plan to Read", value: 6 }];
+  const [selectedDropdownStatus, setSelectedDropdownStatus] = useState(dropdownStatusArray[0]);
+
   // State to manage the current theme ('light' or 'dark')
   const [theme, setTheme] = useState("dark");
   // State to store the extracted manga data
@@ -94,7 +104,7 @@ function App() {
   };
 
   // Function to handle the API call
-  const fetchMangaList = async () => {
+  const fetchMangaList = async (dropdownStatusParam = selectedDropdownStatus) => {
     setIsLoading(true);
     setStatus("Fetching manga list...");
     setMangaData([]);
@@ -102,7 +112,7 @@ function App() {
     setSortOrder("asc");
 
     try {
-      const response = await axios.get("/api/mangalist/FancyUnicorn?status");
+      const response = await axios.get(`/api/mangalist/FancyUnicorn?status=${selectedDropdownStatus}`);
       setStatus(`Success: ${response.status}`);
       console.log("API Response Data (full):", response.data);
       const data = parseMangaData(response.data);
@@ -224,7 +234,13 @@ function App() {
       >
         <Header theme={theme} toggleTheme={toggleTheme} />
         <StatusDisplay theme={theme} status={status} />
-        <FetchButton isLoading={isLoading} fetchMangaList={fetchMangaList} />
+        <div className="flex justify-between items-center mb-6">
+        <StatusDropdown
+          value={selectedDropdownStatus}
+          options={dropdownStatusArray}
+          onChange={setSelectedDropdownStatus}
+        />
+        <FetchButton isLoading={isLoading} fetchMangaList={fetchMangaList} /></div>
         <MangaStats
           theme={theme}
           mangaUserStatusCounts={mangaUserStatusCounts}
