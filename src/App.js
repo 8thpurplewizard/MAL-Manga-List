@@ -91,6 +91,7 @@ function App() {
           publishingStatus: getPublishingStatus(item.manga_publishing_status),
           // Correctly accessing 'name' from each genre object within the 'genres' array
           genres: item.genres ? item.genres.map((genre) => genre.name) : [],
+          manga_image_path: item.manga_image_path
         }));
         console.log("Extracted Manga Details:", extractedData);
         return extractedData;
