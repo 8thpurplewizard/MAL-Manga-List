@@ -237,6 +237,7 @@ function App() {
         <StatusDisplay theme={theme} status={status} />
         <div className="flex justify-between items-center mb-6">
         <StatusDropdown
+          theme={theme}
           value={selectedDropdownStatus}
           options={dropdownStatusArray}
           onChange={setSelectedDropdownStatus}
