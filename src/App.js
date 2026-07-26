@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from "react";
-import axios from "axios";
+import React, { useEffect } from "react";
+
 import Header from "./components/Header";
 import StatusDisplay from "./components/StatusDisplay";
 import FetchButton from "./components/FetchButton";
@@ -8,7 +8,12 @@ import SortControls from "./components/SortControls";
 import MangaList from "./components/MangaList";
 import StatusDropdown from "./components/StatusDropdown"
 
-// Main React App component
+import useMangaData from "./hooks/useMangaData";
+import useSortableData from "./hooks/useSortableData";
+import useMangaStatistics from "./hooks/useMangaStatistics";
+
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
+
 function App() {
   const dropdownStatusArray = [
   { label: "All Manga", value: 7 },
@@ -111,6 +116,7 @@ function App() {
     setMangaData([]);
     setSortBy(null); // Reset sort when fetching new data
     setSortOrder("asc");
+  }, [mangaData, setSortBy, setSortOrder]);
 
     try {
       const response = await axios.get(`/api/mangalist/FancyUnicorn?status=${selectedDropdownStatus}`);
@@ -213,9 +219,9 @@ function App() {
   // Helper to render sort icon
   const renderSortIcon = (key) => {
     if (sortBy === key) {
-      return sortOrder === "asc" ? " ▲" : " ▼"; // Up arrow for ascending, down for descending
+      return sortOrder === "asc" ? " ▲" : " ▼";
     }
-    return ""; // No icon if not sorted by this key
+    return "";
   };
 
   return (
@@ -249,6 +255,7 @@ function App() {
           mangaStatusCounts={mangaStatusCounts}
           mangaGenreCounts={mangaGenreCounts}
           isLoading={isLoading}
+          mangaList={mangaData}
         />
       </div>
       <div
@@ -266,7 +273,7 @@ function App() {
         )}
         <MangaList
           theme={theme}
-          sortedManga={sortedManga}
+          sortedManga={sortedData}
           isLoading={isLoading}
         />
       </div>
@@ -274,4 +281,12 @@ function App() {
   );
 }
 
-export default App;
+function AppWrapper() {
+  return (
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  );
+}
+
+export default AppWrapper;
